@@ -1,5 +1,6 @@
-package org.example;
+package webpages;
 
+import org.example.Main;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
