@@ -1,6 +1,5 @@
 package webpages;
 
-import org.example.Main;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,76 +8,81 @@ import java.time.Duration;
 
 public class Cookies {
 
-    public static void main(String[] args) {
+    private WebDriver driver;
+    private WebDriverWait wait;
 
-        // TEST 1: ACCEPT ALL
-        runTest("TEST 1: Accepted all cookies",
-                By.id("onetrust-accept-btn-handler"));
+    public Cookies(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
-        // TEST 2: REJECT ALL
-        runTest("TEST 2: Rejected all cookies",
-                By.id("onetrust-reject-all-handler"));
-
-        // TEST 3: CUSTOM SETTINGS
-        WebDriver driver = Main.startBrowser();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-
-        try {
-            switchToCookieIframe(driver);
-
-            wait.until(ExpectedConditions.elementToBeClickable(
-                    By.id("onetrust-pc-btn-handler"))).click();
-            System.out.println("⚙️ Opened cookie settings");
-
-            toggle(wait, "ot-group-id-C0002", "Performance Cookies");
-            toggle(wait, "ot-group-id-C0003", "Functional Cookies");
-            toggle(wait, "ot-group-id-C0004", "Targeting Cookies");
-
-            wait.until(ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("button.save-preference-btn-handler.onetrust-close-btn-handler")
-            )).click();
-
-            System.out.println("✅ TEST 3: Custom cookie preferences saved");
-
-        } catch (Exception e) {
-            System.out.println("❌ TEST 3 FAILED");
-            e.printStackTrace();
-        } finally {
-            Main.closeBrowser();
-        }
+        // Reset cookies to override BaseTest auto-accept
+        driver.manage().deleteAllCookies();
+        driver.navigate().refresh();
+        System.out.println("♻️ Cookies reset to override BaseTest");
     }
 
-    // REUSABLE TEST
-    private static void runTest(String successMsg, By button) {
-        WebDriver driver = Main.startBrowser();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+    // ================= ACTIONS =================
 
-        try {
-            switchToCookieIframe(driver);
-            wait.until(ExpectedConditions.elementToBeClickable(button)).click();
-            System.out.println("✅ " + successMsg);
-        } catch (Exception e) {
-            System.out.println("❌ " + successMsg + " FAILED");
-            e.printStackTrace();
-        } finally {
-            Main.closeBrowser();
-        }
+    public void acceptAll() {
+        switchToCookieContext();
+        click(By.id("onetrust-accept-btn-handler"));
+        System.out.println("✅ Accepted all cookies");
+    }
+
+    public void rejectAll() {
+        switchToCookieContext();
+        click(By.id("onetrust-reject-all-handler"));
+        System.out.println("✅ Rejected all cookies");
+    }
+
+    public void setCustomCookies() {
+        switchToCookieContext();
+
+        click(By.id("onetrust-pc-btn-handler"));
+        System.out.println("⚙️ Opened cookie settings");
+
+        toggle("ot-group-id-C0002", "Performance Cookies");
+        toggle("ot-group-id-C0003", "Functional Cookies");
+        toggle("ot-group-id-C0004", "Targeting Cookies");
+
+        click(By.cssSelector("button.save-preference-btn-handler.onetrust-close-btn-handler"));
+        System.out.println("✅ Custom cookie preferences saved");
     }
 
     //  HELPERS
-    private static void switchToCookieIframe(WebDriver driver) {
+
+    private void switchToCookieContext() {
+
+        driver.switchTo().defaultContent();
+
+        try {
+            Thread.sleep(2000); // allow OneTrust to load
+        } catch (InterruptedException ignored) {}
+
+        // Try iframe first
         for (WebElement iframe : driver.findElements(By.tagName("iframe"))) {
             String src = iframe.getAttribute("src");
             if (src != null && src.contains("consent")) {
                 driver.switchTo().frame(iframe);
-                break;
+                System.out.println("🧩 Switched to cookie iframe");
+                return;
             }
         }
+
+        // If no iframe, banner is in main DOM
+        System.out.println("🧩 Cookie banner in main DOM (no iframe)");
     }
 
-    private static void toggle(WebDriverWait wait, String forAttr, String name) {
-        wait.until(ExpectedConditions.elementToBeClickable(
-                By.cssSelector("label.ot-switch[for='" + forAttr + "']"))).click();
+    private void toggle(String forAttr, String name) {
+        WebElement toggle = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("label.ot-switch[for='" + forAttr + "']")
+        ));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", toggle);
         System.out.println("🔁 Toggled " + name);
+    }
+
+    private void click(By locator) {
+        WebElement el = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
     }
 }

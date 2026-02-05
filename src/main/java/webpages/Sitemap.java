@@ -1,34 +1,36 @@
 package webpages;
 
-import org.example.Main;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
 public class Sitemap {
 
-    public static void main(String[] args) {
+    private WebDriver driver;
+    private WebDriverWait wait;
 
-        WebDriver driver = Main.startBrowser();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    public Sitemap(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    }
+
+    // ================== VALIDATE SITEMAP HREFLANG ==================
+
+    public void validateSitemapHreflang() {
 
         try {
-            // ================== ACCEPT COOKIES ==================
-            acceptCookies(driver, wait);
-
-            // ================== OPEN SITEMAP (ROOT URL) ==================
             String sitemapUrl = "https://www.ifs.com/sitemap.xml";
             driver.get(sitemapUrl);
 
-            // Wait until XML loads
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("urlset")));
+            wait.until(
+                    ExpectedConditions.presenceOfElementLocated(By.tagName("urlset"))
+            );
 
             System.out.println("🌐 Sitemap opened: " + sitemapUrl);
 
-            // ================== VALIDATE HREFLANG ==================
             String pageSource = driver.getPageSource();
 
             boolean nl = pageSource.contains("hreflang=\"nl\"");
@@ -42,15 +44,15 @@ public class Sitemap {
             boolean ja = pageSource.contains("hreflang=\"ja\"");
 
             System.out.println("🔍 hreflang validation:");
-            System.out.println("nl=" + nl);
-            System.out.println("fr=" + fr);
-            System.out.println("de=" + de);
-            System.out.println("it=" + it);
-            System.out.println("pl=" + pl);
-            System.out.println("pt=" + pt);
-            System.out.println("es=" + es);
-            System.out.println("tr=" + tr);
-            System.out.println("ja=" + ja);
+            System.out.println("nl = " + nl);
+            System.out.println("fr = " + fr);
+            System.out.println("de = " + de);
+            System.out.println("it = " + it);
+            System.out.println("pl = " + pl);
+            System.out.println("pt = " + pt);
+            System.out.println("es = " + es);
+            System.out.println("tr = " + tr);
+            System.out.println("ja = " + ja);
 
             if (nl && fr && de && it && pl && pt && es && tr && ja) {
                 System.out.println("✅ Sitemap working as expected");
@@ -61,39 +63,6 @@ public class Sitemap {
         } catch (Exception e) {
             System.out.println("❌ Sitemap validation failed");
             e.printStackTrace();
-        } finally {
-            Main.closeBrowser();
-        }
-    }
-
-    // ================== ACCEPT COOKIES ==================
-
-    private static void acceptCookies(WebDriver driver, WebDriverWait wait) {
-        try {
-            List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-            for (WebElement iframe : iframes) {
-                if (iframe.getAttribute("src") != null &&
-                        iframe.getAttribute("src").contains("consent")) {
-                    driver.switchTo().frame(iframe);
-                    break;
-                }
-            }
-
-            WebElement acceptBtn = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                            By.id("onetrust-accept-btn-handler")
-                    )
-            );
-
-            ((JavascriptExecutor) driver)
-                    .executeScript("arguments[0].click();", acceptBtn);
-
-            driver.switchTo().defaultContent();
-            System.out.println("✅ Cookies accepted");
-
-        } catch (Exception e) {
-            System.out.println("⚠️ Cookie banner not displayed");
-            driver.switchTo().defaultContent();
         }
     }
 }
