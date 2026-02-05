@@ -19,7 +19,7 @@ public class BaseTest {
 
         System.setProperty(
                 "webdriver.edge.driver",
-                "C:\\Users\\sechlk\\OneDrive - IFS\\Desktop\\Selenium WebDriver\\msedgedriver.exe"
+                "C:\\Users\\cogalk\\OneDrive - IFS\\Desktop\\web driver\\msedgedriver.exe"
         );
 
         driver = new EdgeDriver();

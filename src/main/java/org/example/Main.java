@@ -17,7 +17,7 @@ public class Main {
         if (driver == null) {
             System.setProperty(
                     "webdriver.edge.driver",
-                    "C:\\Users\\cogalk\\OneDrive - IFS\\Desktop\\web driver\\msedgedriver.exe"
+                    "C:\\Users\\rsanlk\\OneDrive - IFS\\Selenium Web Driver\\msedgedriver.exe"
             );
 
             driver = new EdgeDriver();
