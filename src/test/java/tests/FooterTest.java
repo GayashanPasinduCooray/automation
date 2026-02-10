@@ -1,7 +1,7 @@
 package tests;
 
 import base.BaseTest;
-import pages.Footer;
+import webpages.Footer;
 import org.testng.annotations.Test;
 
 public class FooterTest extends BaseTest {
