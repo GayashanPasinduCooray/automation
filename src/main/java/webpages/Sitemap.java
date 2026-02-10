@@ -17,7 +17,7 @@ public class Sitemap {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
-    // ================== VALIDATE SITEMAP HREFLANG ==================
+    // VALIDATE SITEMAP HREFLANG
 
     public void validateSitemapHreflang() {
 

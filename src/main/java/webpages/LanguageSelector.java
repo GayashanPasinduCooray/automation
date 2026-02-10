@@ -13,13 +13,13 @@ public class LanguageSelector {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // ---------- CONSTRUCTOR ----------
+    // CONSTRUCTOR
     public LanguageSelector(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
-    // ---------- PUBLIC METHOD (CALLED BY TEST) ----------
+    // PUBLIC METHOD (CALLED BY TEST)
     public void validateAllLanguages() {
 
         validateLanguage("Nederlands", "/nl");
@@ -33,7 +33,7 @@ public class LanguageSelector {
         validateLanguage("日本語", "/ja");
     }
 
-    // ---------- LANGUAGE VALIDATION ----------
+    // LANGUAGE VALIDATION
     private void validateLanguage(String language, String expectedPath) {
 
         openLanguageMenu();
@@ -57,7 +57,7 @@ public class LanguageSelector {
         );
     }
 
-    // ---------- OPEN LANGUAGE MENU ----------
+    // OPEN LANGUAGE MENU
     private void openLanguageMenu() {
 
         WebElement languageButton = wait.until(
@@ -70,9 +70,8 @@ public class LanguageSelector {
                 .executeScript("arguments[0].click();", languageButton);
     }
 
-    // ---------- ACCEPT COOKIES (OPTIONAL SAFETY) ----------
-    // You already handle cookies in BaseTest, so this is not required.
-    // Keep only if some pages still show the banner.
+    // ACCEPT COOKIES (OPTIONAL SAFETY)
+
     @SuppressWarnings("unused")
     private void acceptCookiesIfPresent() {
         try {

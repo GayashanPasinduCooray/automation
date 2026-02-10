@@ -11,23 +11,28 @@ public class WordReportUtil {
 
     /**
      * Generates a Word (.docx) file with the given content.
-     * @param fileName Full path including the file name (e.g., "C:\\Users\\cogalk\\Documents\\Report.docx")
+     *
+     * @param filePath Full path of the Word file (can be temp file)
      * @param content  Text content to put into the Word file
      * @return File object representing the created Word file, or null if failed
      */
-    public static File generateWord(String fileName, String content) {
+    public static File generateWord(String filePath, String content) {
+
         try (XWPFDocument document = new XWPFDocument()) {
-            String[] lines = content.split("C:\\Users\\cogalk\\OneDrive - IFS\\Desktop\\automated report\\Report.docx");
+
+            // Split console output by lines
+            String[] lines = content.split("\\r?\\n");
+
             for (String line : lines) {
                 XWPFParagraph paragraph = document.createParagraph();
-                paragraph.createRun().setText(line);
+                paragraph.createRun().setText(line); // preserves emojis
             }
 
-            File file = new File(fileName);
+            File file = new File(filePath);
 
             // Ensure parent directory exists
             File parentDir = file.getParentFile();
-            if (!parentDir.exists()) {
+            if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs();
             }
 

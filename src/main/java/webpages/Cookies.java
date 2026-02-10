@@ -21,7 +21,7 @@ public class Cookies {
         System.out.println("♻️ Cookies reset to override BaseTest");
     }
 
-    // ================= ACTIONS =================
+    // ACTIONS
 
     public void acceptAll() {
         switchToCookieContext();
