@@ -212,7 +212,7 @@ public class Homepage {
     }
 
 
-    /* ================= MEDIA CAROUSEL ================= */
+
     /* ================= MEDIA CAROUSEL ================= */
     public void validateMediaCarousel() {
 
@@ -359,6 +359,9 @@ public class Homepage {
     /* ================= QUOTE ================= */
 
     public void validateQuoteComponent() {
+
+        long start = System.currentTimeMillis();   // ⏱ START TIME
+
         System.out.println("Validate Quote component");
 
         try {
@@ -381,6 +384,8 @@ public class Homepage {
     /* ================= LOGO CAROUSEL ================= */
 
     public void validateLogoCarousel() {
+        long start = System.currentTimeMillis();   // ⏱ START TIME
+
         System.out.println("Logo Carousel Validate");
 
         try {
@@ -403,15 +408,42 @@ public class Homepage {
             }
 
             System.out.println("✅ Total unique logos in carousel: " + totalSlides);
+
+            // ✅ MARK PASS
+            ValidationResultTracker.recordPass("Homepage");
+
+
         } catch (Exception e) {
-            System.out.println("Logo carousel not available: " + e.getMessage());
+
+            // ❌ MARK FAIL
+            ValidationResultTracker.recordFail("Homepage");
+
+            // Original message
+            System.out.println("Fact sheet content changed or not loaded");
+
+            // re-throw so TestNG will know the test failed
+            throw e;
+
+        } finally {
+
+            // ⏱ ALWAYS RECORD EXECUTION TIME
+            ValidationResultTracker.addExecutionTime(
+                    "Homepage",
+                    System.currentTimeMillis() - start
+            );
         }
+
+
+
     }
 
 
     /* ================= PROMO COMPONENT 2 ================= */
 
     public void validateSecondPromo() {
+
+        long start = System.currentTimeMillis();   // ⏱ START TIME
+
         System.out.println("Promo component 2 validate");
 
         try {
@@ -420,14 +452,40 @@ public class Homepage {
 
             System.out.println(driver.findElement(
                     By.xpath("//div[contains(@class,'promo-subtitle')]")).getText());
+
+            // ✅ MARK PASS
+            ValidationResultTracker.recordPass("Homepage");
+
+
         } catch (Exception e) {
+
+            // ❌ MARK FAIL
+            ValidationResultTracker.recordFail("Homepage");
+
+            // Original message
             System.out.println("Promo 2 content updated");
+
+            // re-throw so TestNG will know the test failed
+            throw e;
+
+        } finally {
+
+            // ⏱ ALWAYS RECORD EXECUTION TIME
+            ValidationResultTracker.addExecutionTime(
+                    "Homepage",
+                    System.currentTimeMillis() - start
+            );
         }
+
+
     }
 
     /* ================= NEWS & UPDATES ================= */
 
     public void validateNewsAndUpdates() {
+
+        long start = System.currentTimeMillis();   // ⏱ START TIME
+
         System.out.println("News and update component validate");
 
         try {
@@ -443,15 +501,45 @@ public class Homepage {
             System.out.println("News Article URL: " + driver.getCurrentUrl());
 
             navigateBackToHome();
+
+
+            // ✅ MARK PASS
+            ValidationResultTracker.recordPass("Homepage");
+
+
         } catch (Exception e) {
+
+            // ❌ MARK FAIL
+            ValidationResultTracker.recordFail("Homepage");
+
+            // Original message
             System.out.println("News content updated");
+
+            // re-throw so TestNG will know the test failed
+            throw e;
+
+        } finally {
+
+            // ⏱ ALWAYS RECORD EXECUTION TIME
+            ValidationResultTracker.addExecutionTime(
+                    "Homepage",
+                    System.currentTimeMillis() - start
+            );
         }
+
     }
 
     /* ================= GET STARTED FORM ================= */
 
     public void validateGetStartedForm() {
+
+        long start = System.currentTimeMillis();   // ⏱ START TIME
+
+        try {
+
         System.out.println("===== Get Started Form Validation =====");
+
+
 
         // Validate "Get started with IFS" title
         WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(
@@ -575,6 +663,22 @@ public class Homepage {
 
 
         System.out.println("Form Submission Message: " + successMsg.getText());
+
+
+            // ✅ Mark test as passed
+            ValidationResultTracker.recordPass("Homepage");
+
+        } catch (Exception e) {
+            ValidationResultTracker.recordFail("Homepage");
+            throw e;
+
+        } finally {
+            ValidationResultTracker.addExecutionTime(
+                    "Homepage",
+                    System.currentTimeMillis() - start
+            );
+        }
+
     }
 
 

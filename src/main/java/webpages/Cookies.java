@@ -3,6 +3,7 @@ package webpages;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.ValidationResultTracker;
 
 import java.time.Duration;
 
@@ -24,18 +25,60 @@ public class Cookies {
     // ACTIONS
 
     public void acceptAll() {
+
+        long startTime = System.currentTimeMillis();
+
+        try{
+
         switchToCookieContext();
         click(By.id("onetrust-accept-btn-handler"));
         System.out.println("✅ Accepted all cookies");
+
+            ValidationResultTracker.recordPass("Cookies");
+
+        } catch (Exception e) {
+            ValidationResultTracker.recordFail("Cookies");
+            throw e;
+        } finally {
+            ValidationResultTracker.addExecutionTime(
+                    "Cookies",
+                    System.currentTimeMillis() - startTime
+            );
+        }
+
     }
 
     public void rejectAll() {
+
+        long startTime = System.currentTimeMillis();
+
+        try{
+
         switchToCookieContext();
         click(By.id("onetrust-reject-all-handler"));
         System.out.println("✅ Rejected all cookies");
+
+            ValidationResultTracker.recordPass("Cookies");
+
+        } catch (Exception e) {
+            ValidationResultTracker.recordFail("Cookies");
+            throw e;
+        } finally {
+            ValidationResultTracker.addExecutionTime(
+                    "Cookies",
+                    System.currentTimeMillis() - startTime
+            );
+        }
+
     }
 
     public void setCustomCookies() {
+
+        long startTime = System.currentTimeMillis();
+
+        try{
+
+
         switchToCookieContext();
 
         click(By.id("onetrust-pc-btn-handler"));
@@ -47,6 +90,20 @@ public class Cookies {
 
         click(By.cssSelector("button.save-preference-btn-handler.onetrust-close-btn-handler"));
         System.out.println("✅ Custom cookie preferences saved");
+
+
+        ValidationResultTracker.recordPass("Cookies");
+
+    } catch (Exception e) {
+        ValidationResultTracker.recordFail("Cookies");
+        throw e;
+    } finally {
+        ValidationResultTracker.addExecutionTime(
+                "Cookies",
+                System.currentTimeMillis() - startTime
+        );
+    }
+
     }
 
     //  HELPERS

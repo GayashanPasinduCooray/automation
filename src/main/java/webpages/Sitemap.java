@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.ValidationResultTracker;
 
 import java.time.Duration;
 
@@ -20,6 +21,8 @@ public class Sitemap {
     // VALIDATE SITEMAP HREFLANG
 
     public void validateSitemapHreflang() {
+
+        long start = System.currentTimeMillis();
 
         try {
             String sitemapUrl = "https://www.ifs.com/sitemap.xml";
@@ -60,9 +63,29 @@ public class Sitemap {
                 System.out.println("❌ Sitemap missing some hreflang entries");
             }
 
+            // ✅ MARK PASS
+            ValidationResultTracker.recordPass("Sitemap");
+
+
         } catch (Exception e) {
+
+            // ❌ MARK FAIL
+            ValidationResultTracker.recordFail("Sitemap");
+
+            // Original message
             System.out.println("❌ Sitemap validation failed");
             e.printStackTrace();
+
+            // re-throw so TestNG will know the test failed
+            throw e;
+
+        } finally {
+
+            // ⏱ ALWAYS RECORD EXECUTION TIME
+            ValidationResultTracker.addExecutionTime(
+                    "Sitemap",
+                    System.currentTimeMillis() - start
+            );
         }
     }
 }
