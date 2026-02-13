@@ -8,17 +8,24 @@ import org.testng.ITestResult;
 import org.testng.annotations.*;
 import utils.ConsoleCapture;
 import utils.OutlookEmailUtil;
+import utils.ExcelReportUtil;
 
+import java.io.File;
 import java.time.Duration;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class BaseTest {
 
     protected WebDriver driver;
     private static ConsoleCapture consoleCapture = new ConsoleCapture();
 
-    // Will store the REAL executed test class name (SearchTest etc.)
-    private static String executedTestClassName = "UnknownTest";
+    // Will store all executed test class names
+    private static Set<String> executedTestClasses = new LinkedHashSet<>();
+
+    // Store pass/fail count per class
+    private static Map<String, Map<String, Integer>> testResults = new HashMap<>();
 
     @BeforeSuite
     public void startConsoleCapture() {
@@ -75,14 +82,27 @@ public class BaseTest {
         }
     }
 
-    // Capture REAL test class name here
+    // Capture all executed test class names and pass/fail counts
     @AfterMethod
     public void tearDown(ITestResult result) {
 
-        executedTestClassName =
-                result.getTestClass()
-                        .getRealClass()
-                        .getSimpleName();
+        String className = result.getTestClass().getRealClass().getSimpleName();
+
+        // Add to executed classes
+        executedTestClasses.add(className);
+
+        // Update pass/fail count
+        Map<String, Integer> classResult = testResults.getOrDefault(className, new HashMap<>());
+        classResult.put("PASS", classResult.getOrDefault("PASS", 0));
+        classResult.put("FAIL", classResult.getOrDefault("FAIL", 0));
+
+        if (result.getStatus() == ITestResult.SUCCESS) {
+            classResult.put("PASS", classResult.get("PASS") + 1);
+        } else {
+            classResult.put("FAIL", classResult.get("FAIL") + 1);
+        }
+
+        testResults.put(className, classResult);
 
         if (driver != null) {
             driver.quit();
@@ -101,13 +121,33 @@ public class BaseTest {
         htmlBody.append("<html><body>");
         htmlBody.append("<p>Hi Team,</p>");
         htmlBody.append("<p>The automation execution has completed successfully.</p>");
-        htmlBody.append("<p><b>Executed Test Class:</b> ")
-                .append(executedTestClassName)
+
+        // Show all executed test classes
+        htmlBody.append("<p><b>Executed Test Classes:</b> ")
+                .append(String.join(", ", executedTestClasses))
                 .append("</p>");
-        htmlBody.append("<p>Please find the attached <b>Word report</b> for full execution logs and results.</p>");
+
+        htmlBody.append("<p>Please find the attached <b>Word report</b> and <b>Excel report</b> for full execution logs and results.</p>");
         htmlBody.append("<br>");
         htmlBody.append("<p>Regards,<br>Automation Bot</p>");
         htmlBody.append("</body></html>");
+
+        // Get current date and time
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+
+        // Get current system username
+        String userName = System.getProperty("user.name");
+
+        // Build email subject dynamically
+        String emailSubject = "Automation Test Report - " + formattedDateTime + " - Run by " + userName;
+
+        // Generate Excel report via ExcelReportUtil
+        File tempExcel = ExcelReportUtil.generateExcelReport();
+        String excelPath = tempExcel != null ? tempExcel.getAbsolutePath() : null;
+
+
 
         String[] recipients = {
                 "gpasindu55@gmail.com",
@@ -115,11 +155,13 @@ public class BaseTest {
                 "rashmi.sandeepani@ifs.com"
         };
 
+        // Send email with Word and Excel attachment
         OutlookEmailUtil.sendEmailWithTempWord(
                 recipients,
-                "Automation Test Report - " + executedTestClassName,
+                emailSubject,
                 htmlBody.toString(),
-                fullConsole
+                fullConsole,
+                excelPath // Attach Excel file
         );
     }
 }

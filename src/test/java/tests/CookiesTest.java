@@ -6,8 +6,14 @@ import webpages.Cookies;
 
 public class CookiesTest extends BaseTest {
 
+
+
     @Test
     public void acceptCookiesTest() {
+
+        // ================= START MESSAGE =================
+        System.out.println("================+ Cookies TESTING START +================" );
+
         Cookies cookies = new Cookies(driver);
         cookies.acceptAll();
     }
@@ -22,5 +28,9 @@ public class CookiesTest extends BaseTest {
     public void customCookiesTest() {
         Cookies cookies = new Cookies(driver);
         cookies.setCustomCookies();
+
+        // ================= END MESSAGE =================
+        System.out.println("================+ Cookies TESTING END +================" );
+
     }
 }
